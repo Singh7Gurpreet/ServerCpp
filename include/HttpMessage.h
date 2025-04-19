@@ -2,17 +2,34 @@
 #define HTTP_MESSAGE_H
 
 #include <string>
+#include <unordered_map>
 
 #include "HttpMethods.h"
+#include "HttpVersions.h"
 
-// this is abstract class of http request and response 
-// so I m going to store every data in differnt different variable 
-// but I am confused what should be the best practice for this ? 
-
+// Abstract base class representing both HTTP Request and Response
 class HttpMessage {
-  HttpMethod method;
-  std::string hostname;
+protected:
+    HttpMethod method;
+    std::string hostname;
+    std::string path;
+    HttpVersions version;
+    std::unordered_map<std::string, std::string> headers;
 
+public:
+    // Constructor and virtual destructor
+    HttpMessage() = default;
+    virtual ~HttpMessage() = default;
+
+    // Setters
+    void setHeader(const std::string& headerName, const std::string& headerContent);
+    void setVersion(const std::string& versionStr);
+    void setMethod(const std::string& methodName);
+
+    // Getters
+    HttpMethod getMethod() const;
+    std::string getHeader(const std::string& headerName) const;
+    HttpVersions getVersion() const;
 };
 
-#endif
+#endif // HTTP_MESSAGE_H

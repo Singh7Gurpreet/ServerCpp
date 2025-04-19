@@ -43,6 +43,10 @@ int main() {
             send(clientSocket, httpResponse, strlen(httpResponse), 0);
             close(clientSocket);
         }
+        
+        int input;
+        std::cin >> input;
+        if(input == 0) break;
     }
 
     close(socketId);
