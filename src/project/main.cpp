@@ -4,20 +4,22 @@
 #include <unistd.h>
 #include <cstring>
 
+#include "HttpRequest.h"
+
 using namespace std;
 
 int main() {
     int socketId = socket(AF_INET, SOCK_STREAM, 0);
-
+    HttpRequest h1;
     sockaddr_in pr{};
     pr.sin_family = AF_INET;
     pr.sin_port = htons(3000);
     pr.sin_addr.s_addr = INADDR_ANY;
 
     bind(socketId, (sockaddr*)&pr, sizeof(pr));
-    int l = listen(socketId, 5);
+    listen(socketId, 5);
 
-    cout << "HTTP server running at http://localhost:3000\n" << l;
+    cout << "HTTP server running at http://localhost:3000\n";
 
     while (true) {
         sockaddr_in clientAddr{};
@@ -30,8 +32,7 @@ int main() {
             // Optional: read incoming request
             char buffer[1024] = {0};
             read(clientSocket, buffer, sizeof(buffer));
-            cout << "Request:\n" << buffer << "\n";
-
+            h1.parse(buffer);
             // Send HTTP response
             const char* httpResponse =
                 "HTTP/1.1 200 OK\r\n"
@@ -43,10 +44,6 @@ int main() {
             send(clientSocket, httpResponse, strlen(httpResponse), 0);
             close(clientSocket);
         }
-        
-        int input;
-        std::cin >> input;
-        if(input == 0) break;
     }
 
     close(socketId);

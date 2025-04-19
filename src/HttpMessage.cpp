@@ -1,15 +1,5 @@
 #include "HttpMessage.h"
 
-// constructor
-HttpMessage::HttpMessage() {
-    // Default constructor – no special logic needed for now
-}
-
-// destructor
-HttpMessage::~HttpMessage() {
-    // Virtual destructor – useful for cleanup in derived classes
-}
-
 // Setters
 void HttpMessage::setHeader(const std::string& headerName, const std::string& headerContent) {
     headers[headerName] = headerContent;
