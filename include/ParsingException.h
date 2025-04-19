@@ -3,8 +3,11 @@
 
 #include "Exceptions.h"
 
-class ParsingError: public Exceptions {
-  const char* type() {
+class ParsingException: public Exceptions {
+  public:
+  ParsingException(std::string message) :
+       Exceptions(message) {}
+  const char* type() const {
     return "Parsing Error";
   }  
 };

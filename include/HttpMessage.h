@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "HeaderNotFoundException.h"
+#include "ParsingException.h"
 #include "HttpMethods.h"
 #include "HttpVersions.h"
 
@@ -25,10 +27,12 @@ public:
     void setHeader(const std::string& headerName, const std::string& headerContent);
     void setVersion(const std::string& versionStr);
     void setMethod(const std::string& methodName);
+    void setPath(const std::string& pathString);
 
     // Getters
     HttpMethod getMethod() const;
     std::string getHeader(const std::string& headerName) const;
+    std::string getPath() const;
     HttpVersions getVersion() const;
 };
 
