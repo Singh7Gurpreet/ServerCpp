@@ -1,7 +1,7 @@
 #ifndef STATUS_CODES_H
 #define STATUS_CODES_H
 
-enum HttpStatus {
+enum HttpStatusCode {
   // 1xx - Informational
   CONTINUE = 100,
   SWITCHING_PROTOCOLS = 101,

@@ -16,7 +16,7 @@ void HttpRequest::parseFirstLine(const std::string& firstLine) {
 }
 
 void HttpRequest::parseHeaders(const std::string& line) {
-  int firstColon = line.find(":");
+  std::string::size_type firstColon = line.find(':');
 
   if(firstColon == std::string::npos) {
     throw ParsingException("Invalid Header");

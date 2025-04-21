@@ -15,7 +15,7 @@ protected:
     HttpMethod method;
     std::string hostname;
     std::string path;
-    HttpVersions version;
+    HttpVersion version;
     std::unordered_map<std::string, std::string> headers;
 
 public:
@@ -33,7 +33,7 @@ public:
     HttpMethod getMethod() const;
     std::string getHeader(const std::string& headerName) const;
     std::string getPath() const;
-    HttpVersions getVersion() const;
+    HttpVersion getVersion() const;
 };
 
 #endif // HTTP_MESSAGE_H

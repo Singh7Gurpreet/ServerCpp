@@ -6,8 +6,11 @@
 #include "HttpMessage.h"
 #include "Parsable.h"
 #include "ParsingException.h"
+#include "HttpResponse.h"
 class HttpRequest : public HttpMessage, public Parsable{
+    
   public:
+    HttpResponse response;
     void parse(const std::string& message);
     void parseHeaders(const std::string& header);
     void parseFirstLine(const std::string& line);

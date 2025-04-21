@@ -22,13 +22,13 @@ void HttpMessage::setVersion(const std::string& version) {
   }
 
   if(version == "HTTP/1.0") {
-    this->version = HttpVersions::HTTP_1_0;
+    this->version = HttpVersion::HTTP_1_0;
   } else if(version == "HTTP/1.1") {
-    this->version = HttpVersions::HTTP_1_1;
+    this->version = HttpVersion::HTTP_1_1;
   } else if(version == "HTTP/2.0") {
-    this->version = HttpVersions::HTTP_2_0;
+    this->version = HttpVersion::HTTP_2_0;
   } else if(version == "HTTP/3.0") {
-    this->version = HttpVersions::HTTP_3_0;
+    this->version = HttpVersion::HTTP_3_0;
   } else {
     throw new ParsingException("Version name is invalid");
   }
@@ -69,9 +69,10 @@ std::string HttpMessage::getHeader(const std::string& headerName) const {
   } catch (const Exceptions& e) {
     e.logError();
   }
+  return "";
 }
 
-HttpVersions HttpMessage::getVersion() const {
+HttpVersion HttpMessage::getVersion() const {
     return this->version;
 }
 
