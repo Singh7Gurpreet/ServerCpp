@@ -11,6 +11,7 @@ class HttpRequest : public HttpMessage, public Parsable{
     void parse(const std::string& message);
     void parseHeaders(const std::string& header);
     void parseFirstLine(const std::string& line);
+    void handleRequest();
 };
 
 #endif // HTTP_REQUEST_H

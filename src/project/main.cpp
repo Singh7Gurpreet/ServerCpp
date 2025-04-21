@@ -10,7 +10,6 @@ using namespace std;
 
 int main() {
     int socketId = socket(AF_INET, SOCK_STREAM, 0);
-    HttpRequest h1;
     sockaddr_in pr{};
     pr.sin_family = AF_INET;
     pr.sin_port = htons(3000);
@@ -28,11 +27,12 @@ int main() {
 
         if (clientSocket >= 0) {
             cout << "Client connected\n";
-
+            HttpRequest h1;
             // Optional: read incoming request
             char buffer[1024] = {0};
             read(clientSocket, buffer, sizeof(buffer));
             h1.parse(buffer);
+            h1.handleRequest();
             // Send HTTP response
             const char* httpResponse =
                 "HTTP/1.1 200 OK\r\n"
