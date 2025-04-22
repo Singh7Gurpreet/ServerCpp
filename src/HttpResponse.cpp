@@ -12,9 +12,22 @@ HttpResponse& HttpResponse::setContentType(HttpContentType type) {
 
 HttpResponse& HttpResponse::setBody(std::string&& content) {
     this->body = std::move(content);
-    this->bodyLength = static_cast<int>(this->body.size());
+    this->bodyLength = this->body.size();
     return *this;
 }
+
+std::string HttpResponse::getContentType() {
+  return getContentTypeString(this->contentType);
+}
+
+HttpStatusCode HttpResponse::getStatus() {
+  return this->status;
+}
+
+std::string HttpResponse::getBody() {
+  return this->body;
+}
+
 
 /*
 
@@ -29,14 +42,23 @@ Connection: close\r\n
  */
 
 
-// Will be start working on this tommorow
+// Will be working for only http 1.0 because connection is close everytime
 char* HttpResponse::generateResponse() {
-  //need something like 
-  // `Hi there I am ${}`
-  char *response =
-  "";
+  std::stringstream output;
 
-  return response;
+  output << getHttpVersionString(this->getVersion()) << " " << this->getStatus() << "\r\n";
+  output << "Content-Length: " << this->bodyLength << "\r\n";
+  output << "Content-Type: " << this->getContentType() << "\r\n";
+  output << "Connection: " << "close\r\n";
+  output << "\r\n";
+  output << this->getBody();
+
+  std::string responseStr = output.str();
+
+  char* responseCStr = new char[responseStr.size() + 1]; 
+  lengthOfResponse = responseStr.size();
+  std::strcpy(responseCStr, responseStr.c_str());
+  return responseCStr;
 }
 
 int HttpResponse::length() {

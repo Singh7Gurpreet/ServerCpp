@@ -7,6 +7,7 @@ void HttpRequest::parseFirstLine(const std::string& firstLine) {
 
   try{
   setMethod(methodName);
+  this->response.setVersion(version);
   setVersion(version);
   setPath(path); 
 
@@ -60,7 +61,5 @@ void HttpRequest::parse(const std::string& message) {
 }
 
 void HttpRequest::handleRequest() {
-  for(auto i : headers) {
-    std::cout << i.first << " " << i.second << std::endl;
-  }
+
 }

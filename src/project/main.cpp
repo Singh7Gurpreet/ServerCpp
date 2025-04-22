@@ -34,14 +34,19 @@ int main() {
             h1.parse(buffer);
             h1.handleRequest();
             // Send HTTP response
-            const char* httpResponse =
+            h1.response.setBody("<h1>Hello from server!</h1>").setContentType(TEXT_HTML).setStatus(OK);
+            /*const char* httpResponse =
                 "HTTP/1.1 200 OK\r\n"
                 "Content-Type: text/html\r\n"
                 "Content-Length: 28\r\n"
                 "\r\n"
                 "<h1>Hello from server!</h1>\n";
-
-            send(clientSocket, httpResponse, strlen(httpResponse), 0);
+            */
+            char *p = h1.response.generateResponse();
+            cout << p << endl;
+            send(clientSocket, p, h1.response.length(), 0);
+            delete p;
+            p = nullptr;
             close(clientSocket);
         }
     }

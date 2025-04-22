@@ -1,15 +1,16 @@
 #ifndef HTTP_RESPONSE_H
 #define HTTP_RESPONSE_H
 
+#include<sstream>
+
 #include "HttpMessage.h"
 #include "HttpStatusCode.h"
 #include "Generatable.h"
 #include "HttpVersions.h"
 #include "HttpContentType.h"
+#include "HttpVersions.h"
 
-// will h
-
-class HttpResponse : Generatable{
+class HttpResponse : public Generatable, public HttpMessage{
   HttpStatusCode status;
   int bodyLength; 
   HttpContentType contentType;
@@ -28,6 +29,9 @@ class HttpResponse : Generatable{
     // function in string
     HttpResponse& setBody(std::string&& content);
 
+    HttpStatusCode getStatus();
+    std::string getContentType();
+    std::string getBody();
     char* generateResponse();
     int length();
 };
