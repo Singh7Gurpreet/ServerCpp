@@ -10,12 +10,9 @@ like websockets(bidirectional), webserver, http1.1, http3.0 etc.
 can also add flags(or options) for multithreading and other features.
 */
 
-
-
 class Server{
   public:
-    virtual int bind(int port) = 0;
-    virtual void listen() = 0;
+    virtual void listen(int port, std::function<void()> function) = 0;
 };
 
 #endif
