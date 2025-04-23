@@ -12,7 +12,9 @@ can also add flags(or options) for multithreading and other features.
 
 class Server{
   public:
-    virtual void listen(int port, std::function<void()> function) = 0;
+    Server() = default;
+    virtual ~Server() = default;
+    virtual void kickStart(int port, std::function<void()> function) = 0;
 };
 
 #endif
