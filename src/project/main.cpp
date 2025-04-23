@@ -8,6 +8,23 @@
 
 using namespace std;
 
+/*
+POST /users/signUp HTTP/1.1
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.42.0
+Accept: *//*
+Postman-Token: c4e95e2a-fcbe-42dc-ae21-36a6621ca24f
+Host: localhost:3000
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 43
+
+{
+    "Data" : 313213,
+    "Name" : 20000
+}
+*/
+
 int main() {
     int socketId = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in pr{};
@@ -31,17 +48,11 @@ int main() {
             // Optional: read incoming request
             char buffer[1024] = {0};
             read(clientSocket, buffer, sizeof(buffer));
+            cout << buffer << endl;
             h1.parse(buffer);
             h1.handleRequest();
-            // Send HTTP response
+            // send http response
             h1.response.setBody("<h1>Hello from server!</h1>").setContentType(TEXT_HTML).setStatus(OK);
-            /*const char* httpResponse =
-                "HTTP/1.1 200 OK\r\n"
-                "Content-Type: text/html\r\n"
-                "Content-Length: 28\r\n"
-                "\r\n"
-                "<h1>Hello from server!</h1>\n";
-            */
             char *p = h1.response.generateResponse();
             cout << p << endl;
             send(clientSocket, p, h1.response.length(), 0);
