@@ -1,6 +1,6 @@
 #include "ServerFactory.h"
 
-std::unique_ptr<Server> ServerFactory::create(ServerType type) {
+std::unique_ptr<Server> ServerFactory::create(ServerType type, int flag) {
   switch (type)
   {
   case ServerType::HTTP:

@@ -2,9 +2,9 @@
 
 #include "Exceptions.h"
 
-class RouteNotFound: public Exceptions {
+class RouteNotFoundException: public Exceptions {
   public:
-  RouteNotFound(const std::string& message) :
+  RouteNotFoundException(const std::string& message) :
          Exceptions(message) {}
   const char* type() const {
     return "RouteNotFound";

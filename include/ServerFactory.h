@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Server.h"
-#include "HttpTcpServer.h"
+#include "HttpTcpServerSingleThreaded.h"
 #include "ServerEnums.h"
 #include "ServerNotFoundException.h"
 
@@ -20,5 +20,5 @@ pattern. :)
 
 class ServerFactory {
 public:
-    static std::unique_ptr<Server> create(ServerType type);
+    static std::unique_ptr<Server> create(ServerType type, int flag);
 };

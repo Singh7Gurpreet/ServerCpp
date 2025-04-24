@@ -6,6 +6,7 @@
 
 #include "ServerFactory.h"
 #include "Exceptions.h"
+#include "Router.h"
 
 using namespace std;
 
@@ -27,8 +28,16 @@ Content-Length: 43
 */
 
 int main() {
+    Router& router = Router::getRouter();
+
+    router.get("/",[&](HttpRequest& req) {
+        req.response.setBody("<h1>Hello World from layers of abstraction</h1>")
+                    .setContentType(HttpContentType::TEXT_HTML)
+                    .setStatus(HttpStatusCode::OK);
+    });
+
     try{
-    auto server = ServerFactory::create(ServerType::HTTP);
+    auto server = ServerFactory::create(ServerType::HTTP,ServerFlags::MULTITHREADED);
     server->kickStart(3000,[&](){
         std::cout << "Listening on port 3000...";
     });

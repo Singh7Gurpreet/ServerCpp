@@ -10,6 +10,8 @@
 class HttpRequest : public HttpMessage, public Parsable{
     
   public:
+    HttpRequest() {}
+    HttpRequest(char buffer[]);
     HttpResponse response;
     void parse(const std::string& message);
     void parseHeaders(const std::string& header);

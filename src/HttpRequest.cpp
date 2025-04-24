@@ -1,5 +1,10 @@
 #include "HttpRequest.h"
 
+HttpRequest::HttpRequest(char buffer[]) {
+  std::string requestBuffer = std::string(buffer);
+  this->parse(requestBuffer);
+}
+
 void HttpRequest::parseFirstLine(const std::string& firstLine) {
   std::stringstream ss(firstLine);
   std::string methodName, path, version;
