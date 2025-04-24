@@ -26,7 +26,15 @@ void Router::patch(const std::string& path, RouteHandler handler) {
 }
 
 void Router::handleRequest(char buffer[], int clientSocket) {
-    HttpRequest request(buffer);
+    
+    HttpRequest request;
+
+    try{
+        request = HttpRequest(buffer);    
+    } catch(Exceptions& e) {
+        e.logError();
+        throw;
+    }
 
     HttpMethod currentMethod = request.getMethod();
     std::string currentPath = request.getPath();
@@ -42,5 +50,7 @@ void Router::handleRequest(char buffer[], int clientSocket) {
         routesMap[currentMethod][currentPath](request);
         char* response = request.response.generateResponse();
         send(clientSocket,response,request.response.length(),0);
+        delete response;
+        response = nullptr;
     }
 }

@@ -32,7 +32,7 @@ int main() {
 
     router.get("/",[&](HttpRequest& req) {
         req.response.setBody("<h1>Hello World from layers of abstraction</h1>")
-                    .setContentType(HttpContentType::TEXT_HTML)
+                    .setContentType(HttpContentType::APPLICATION_JSON)
                     .setStatus(HttpStatusCode::OK);
     });
 

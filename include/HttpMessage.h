@@ -4,14 +4,18 @@
 #include <string>
 #include <unordered_map>
 
+#include "nlohmann/json.hpp"
 #include "HeaderNotFoundException.h"
 #include "ParsingException.h"
 #include "HttpMethods.h"
 #include "HttpVersions.h"
 
+using Json = nlohmann::json;
+
 // Abstract base class representing both HTTP Request and Response
 class HttpMessage {
-protected:
+private:
+    Json messageBody;
     HttpMethod method;
     std::string hostname;
     std::string path;
