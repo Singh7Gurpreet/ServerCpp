@@ -32,11 +32,15 @@ void Router::handleRequest(char buffer[], int clientSocket) {
     std::string currentPath = request.getPath();
 
     if(routesMap[currentMethod].find(currentPath) == routesMap[currentMethod].end()) {
+        request.response.setContentType(HttpContentType::APPLICATION_JSON).setBody(
+            "{\"message\":\"Url not found\"}"
+        ).setStatus(HttpStatusCode::BAD_REQUEST);
+        char* response = request.response.generateResponse();
+        send(clientSocket,response,request.response.length(),0);
         throw RouteNotFoundException("Route " + currentPath + " not found in routes");
+    } else {
+        routesMap[currentMethod][currentPath](request);
+        char* response = request.response.generateResponse();
+        send(clientSocket,response,request.response.length(),0);
     }
-
-    routesMap[currentMethod][currentPath](request);
-
-    char* response = request.response.generateResponse();
-    send(clientSocket,response,request.response.length(),0);
 }

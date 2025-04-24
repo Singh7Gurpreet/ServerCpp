@@ -13,12 +13,12 @@ HttpTcpServer::~HttpTcpServer() {
 void HttpTcpServer::kickStart(int port, std::function<void()> function) {
   this->port = port;
   pr.sin_port = htons(this->port);
-  if(bind(socketId, (sockaddr*)&pr, sizeof(pr)) < 0) {
-    std::cout << "hello";
-  };
+  if(bind(socketId, (sockaddr*)&pr, sizeof(pr)) < 0 ) {
+    throw ServerInitializationException("Problem with binding socket error");
+  }
   int l = listen(socketId, 128);
   if(l < 0) {
-    throw ServerInitializationException("Problem with listen error number is" + std::string(strerror(errno)));
+    throw ServerInitializationException("Problem with listen error, number is" + std::string(strerror(errno)));
   }
 
   if(function) {
@@ -38,12 +38,6 @@ void HttpTcpServer::kickStart(int port, std::function<void()> function) {
           } catch (Exceptions& e) {
             e.logError();
           }
-          // h1.response.setBody("<h1>Hello from server!</h1>").setContentType(TEXT_HTML).setStatus(OK);
-          // char *p = h1.response.generateResponse();
-          // std::cout << p << std::endl;
-          // send(clientSocket, p, h1.response.length(), 0);
-          // delete p;
-          // p = nullptr;
           close(clientSocket);
       }
   }

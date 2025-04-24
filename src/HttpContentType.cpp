@@ -8,6 +8,7 @@ std::string getContentTypeString(HttpContentType contentType)
     case TEXT_CSS: return "text/css";
     case APPLICATION_JAVASCRIPT: return "application/javascript";
     case APPLICATION_PDF: return "application/pdf";
+    case APPLICATION_JSON: return "application/json";
     default: throw ContentTypeNotFound("Not a valid supported Content Type");
   }
   return "Content Type Not found";
