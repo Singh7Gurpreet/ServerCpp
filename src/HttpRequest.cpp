@@ -2,7 +2,12 @@
 
 HttpRequest::HttpRequest(char buffer[]) {
   std::string requestBuffer = std::string(buffer);
+  try{
   this->parse(requestBuffer);
+  } catch(Exceptions& e) {
+    e.logError();
+    throw;
+  }
 }
 
 void HttpRequest::parseFirstLine(const std::string& firstLine) {
@@ -18,14 +23,15 @@ void HttpRequest::parseFirstLine(const std::string& firstLine) {
 
   } catch (const Exceptions& e) {
     e.logError();
+    throw;
   }
 }
 
 void HttpRequest::parseHeaders(const std::string& line) {
   std::string::size_type firstColon = line.find(':');
-
+  if(line.empty()) return;
   if(firstColon == std::string::npos) {
-    throw ParsingException("Invalid Header");
+    throw ParsingException("Invalid Header: " + line);
   } 
 
   this->setHeader(line.substr(0,firstColon),line.substr(firstColon+1));
@@ -50,18 +56,23 @@ void HttpRequest::parseHeaders(const std::string& line) {
 */ 
 
 void HttpRequest::parse(const std::string& message) {
+  std::cout << message << "\n";
   std::stringstream messageStream(message);
   std::string line;
 
-  getline(messageStream, line);
-  // getting carriage return out of picture :)
-  line.pop_back();
-  parseFirstLine(line);
+  try {
+    getline(messageStream, line);
+    if (!line.empty()) line.pop_back();  // ✅ only pop if not empty
+    parseFirstLine(line);
 
-  while(getline(messageStream,line)) {
-    line.pop_back();
-    if(line.empty()) break;
-    parseHeaders(line);
+    while (getline(messageStream, line)) {
+      if (!line.empty()) line.pop_back();  // ✅ safety check here too
+      if (line == "\r" || line.empty()) break;
+      parseHeaders(line);
+    }
+  } catch (Exceptions& e) {
+    e.logError();
+    throw;
   }
 }
 

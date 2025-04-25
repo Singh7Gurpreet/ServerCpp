@@ -16,14 +16,13 @@ void HttpTcpServer::kickStart(int port, std::function<void()> function) {
   if(bind(socketId, (sockaddr*)&pr, sizeof(pr)) < 0 ) {
     throw ServerInitializationException("Problem with binding socket error");
   }
-  int l = listen(socketId, 128);
+  int l = listen(socketId, SOMAXCONN);
   if(l < 0) {
     throw ServerInitializationException("Problem with listen error, number is" + std::string(strerror(errno)));
   }
 
   if(function) {
   function();
-
   }
     while (true) {
       sockaddr_in clientAddr{};
