@@ -3,8 +3,9 @@
 #include <memory>
 
 #include "Server.h"
-#include "HttpTcpServerSingleThreaded.h"
+#include "HttpTcpServer.h"
 #include "ServerEnums.h"
+#include "SingleThreadServerStrategy.h"
 #include "ServerNotFoundException.h"
 
 /*
