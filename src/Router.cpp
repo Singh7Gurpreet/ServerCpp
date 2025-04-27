@@ -49,8 +49,9 @@ void Router::handleRequest(char buffer[], int clientSocket) {
     } else {
         routesMap[currentMethod][currentPath](request);
         char* response = request.response.generateResponse();
-        send(clientSocket,response,request.response.length(),0);
+        int bytes = send(clientSocket,response,request.response.length(),0);
         delete response;
         response = nullptr;
+        close(clientSocket);
     }
 }

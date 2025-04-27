@@ -1,43 +1,59 @@
-#include "ThreadPool.h"
+// #include "ThreadPool.h"
 
-template <typename DataType>
-ThreadPool<DataType>::ThreadPool(int n) {
-  unsigned int max_threads = std::thread::hardware_concurrency();
-        if (max_threads != 0 && n > max_threads) {
-            throw std::runtime_error("Requested threads exceed system capabilities");
-        }  
-    for (int i = 0; i < n; i++) {
-      workers.push_back(std::thread(&ThreadPool::workAssigner, this));
-  }
-  
-}
+// template <typename DataType>
+// ThreadPool<DataType>::ThreadPool(int n) {
+//     unsigned int max_threads = std::thread::hardware_concurrency();
+//     if (max_threads != 0 && n > max_threads) {
+//         throw std::runtime_error("Requested threads exceed system capabilities");
+//     }
 
-template <typename DataType>
-ThreadPool<DataType>::~ThreadPool() {
+//     stop = false;
+//     for (int i = 0; i < n; i++) {
+//         workers.push_back(std::thread(&ThreadPool::workAssigner, this));
+//     }
+// }
 
-}
+// template <typename DataType>
+// ThreadPool<DataType>::~ThreadPool() {
+//     {
+//         std::unique_lock<std::mutex> lock(lockGuard);
+//         stop = true;
+//     }
+//     cv.notify_all();
 
-template <typename DataType>
-void ThreadPool<DataType>::addWork(DataType d) {
-  {
-  std::lock_guard<std::mutex> lock(this->lockGuard);
-  workQueue.push(d);
-  }
-  cv.notify_one();
-}
+//     for (std::thread &worker : workers) {
+//         if (worker.joinable())
+//             worker.join(); 
+//     }
+// }
 
-template <typename DataType>
-void ThreadPool<DataType>::workAssigner() {
-    std::unique_lock<std::mutex> lock(this->lockGuard);
+// template <typename DataType>
+// void ThreadPool<DataType>::addWork(DataType d) {
+//     {
+//         std::lock_guard<std::mutex> lock(this->lockGuard);
+//         workQueue.push(std::move(d));
+//     }
+//     cv.notify_one();
+// }
 
-    cv.wait(lock, [this]() {
-        return !this->workQueue.empty();
-    });
+// template <typename DataType>
+// void ThreadPool<DataType>::workAssigner() {
+//     while (true) {
+//         std::unique_lock<std::mutex> lock(this->lockGuard);
 
-    auto work = this->workQueue.front();
-    this->workQueue.pop();
+//         cv.wait(lock, [this]() {
+//             return stop || !this->workQueue.empty();
+//         });
 
-    lock.unlock();
+//         if (stop && this->workQueue.empty()) {
+//             return;
+//         }
 
-    work();
-}
+//         auto work = std::move(this->workQueue.front());
+//         this->workQueue.pop();
+
+//         lock.unlock();
+
+//         work(); // Execute the task
+//     }
+// }

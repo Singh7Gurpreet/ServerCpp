@@ -7,6 +7,7 @@
 #include "ServerEnums.h"
 #include "SingleThreadServerStrategy.h"
 #include "ServerNotFoundException.h"
+#include "MultiThreadServerStrategy.h"
 
 /*
 Why factory design pattern for server?

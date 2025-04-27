@@ -56,7 +56,6 @@ void HttpRequest::parseHeaders(const std::string& line) {
 */ 
 
 void HttpRequest::parse(const std::string& message) {
-  std::cout << message << "\n";
   std::stringstream messageStream(message);
   std::string line;
 
