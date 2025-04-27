@@ -5,6 +5,7 @@
 #include <vector>
 #include <queue>
 #include <mutex>
+#include <condition_variable>
 
 template <typename DataType>
 class ThreadPool{

@@ -50,6 +50,12 @@ void Router::handleRequest(char buffer[], int clientSocket) {
         routesMap[currentMethod][currentPath](request);
         char* response = request.response.generateResponse();
         int bytes = send(clientSocket,response,request.response.length(),0);
+        if(bytes == 1) {
+            delete response;
+            response = nullptr;
+            close(clientSocket);
+            throw std::runtime_error("Unable to send data\n");
+        }
         delete response;
         response = nullptr;
         close(clientSocket);
