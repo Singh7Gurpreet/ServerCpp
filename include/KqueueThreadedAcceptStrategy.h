@@ -6,8 +6,8 @@
 class KqueueThreadedAcceptStrategy : public ServerStartStrategy {
   KqueueHandler kq;
   public:
-      KqueueThreadedAcceptStrategy(int numberOfThreads);
-      ~KqueueThreadedAcceptStrategy();
+      KqueueThreadedAcceptStrategy(int numberOfThreads = 1);
+      ~KqueueThreadedAcceptStrategy() = default;
   
       void kickStart(HttpTcpServer& server, std::function<void()> function) override;
   };

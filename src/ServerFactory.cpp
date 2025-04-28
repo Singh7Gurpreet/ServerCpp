@@ -4,7 +4,10 @@ std::unique_ptr<Server> ServerFactory::create(ServerType type, int flag) {
   switch (type) {
   case ServerType::HTTP: {
     auto server = std::make_unique<HttpTcpServer>();
-      if(flag & MULTITHREADED) {
+      if((flag & MULTITHREADED) && (flag & EVENTS_BASED)) {
+        server->useStrategy(new KqueueThreadedAcceptStrategy(4));
+      }
+      else if(flag & MULTITHREADED) {
         server->useStrategy(new MultiThreadServerStrategy(4));
       } else {
       server->useStrategy(new SingleThreadServerStrategy()); 

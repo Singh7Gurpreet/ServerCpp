@@ -32,7 +32,7 @@ void KqueueHandler::processEvents(HttpTcpServer& server) {
 
   for (int i = 0; i < nevents; ++i) {
       if (events[i].filter == EVFILT_READ) {
-          if (events[i].ident == socketId) { 
+          if (events[i].ident == (uintptr_t)socketId) { 
               sockaddr_in clientAddr{};
               socklen_t clientSize = sizeof(clientAddr);
               int clientSocket = accept(socketId, (sockaddr*)&clientAddr, &clientSize);

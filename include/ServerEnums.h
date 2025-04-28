@@ -7,7 +7,7 @@ enum ServerType {
 
 enum ServerFlags {
   NONE            = 0,
-  SECURE          = 1 << 0,  // 1
+  EVENTS_BASED    = 1 << 0,  // 1
   TLS             = 1 << 1,  // 2
   MULTITHREADED   = 1 << 2,  // 4
   SINGLETHREADED  = 1 << 3,  // 8
