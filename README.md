@@ -1,4 +1,4 @@
-# HTTP Web Server with Router and Strategy Pattern
+# HTTP Web Server from Scratch
 
 This project implements a **high-performance HTTP web server** in C++ using layers of abstraction.  
 It provides an **easy way to start different server types** (single-threaded, multi-threaded, event-based) and **handle routing** (`GET`, `POST`, `PUT`, `PATCH`) with clean API design.
