@@ -1,3 +1,5 @@
+#ifdef __APPLE__
+
 #include "KqueueHandler.h"
 
 KqueueHandler::KqueueHandler(int n) {
@@ -59,3 +61,5 @@ void KqueueHandler::processEvents(HttpTcpServer& server) {
       }
   }
 }
+
+#endif

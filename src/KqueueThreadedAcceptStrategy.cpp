@@ -1,3 +1,5 @@
+#ifdef __APPLE__
+
 #include "KqueueThreadedAcceptStrategy.h"
 
 KqueueThreadedAcceptStrategy::KqueueThreadedAcceptStrategy(int numberOfThreads)
@@ -24,3 +26,5 @@ void KqueueThreadedAcceptStrategy::kickStart(HttpTcpServer& server, std::functio
     kq.processEvents(server);
   }
 }
+
+#endif

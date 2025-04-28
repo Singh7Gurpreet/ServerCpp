@@ -1,3 +1,7 @@
+#pragma once
+
+#ifdef __APPLE__
+
 #include "ServerStartStrategy.h"
 #include "HttpTcpServer.h"
 #include "ThreadPool.h"
@@ -11,3 +15,5 @@ class KqueueThreadedAcceptStrategy : public ServerStartStrategy {
   
       void kickStart(HttpTcpServer& server, std::function<void()> function) override;
   };
+
+#endif

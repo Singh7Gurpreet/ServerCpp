@@ -1,5 +1,8 @@
 #pragma once
 
+
+#ifdef __APPLE__
+
 #define MAX_EVENTS 1024
 #define BUFFER_SIZE 1024
 
@@ -31,3 +34,5 @@ class KqueueHandler: public EventHandler {
   void registerChanges(int socketId);
   void processEvents(HttpTcpServer& server);
 };
+
+#endif

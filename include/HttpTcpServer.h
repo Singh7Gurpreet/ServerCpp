@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <iostream>
+#include <memory>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -20,7 +21,7 @@ class HttpTcpServer : public Server {
   int port;
   sockaddr_in pr{};
   Router& routes;
-  ServerStartStrategy* strategy;
+  std::unique_ptr<ServerStartStrategy> strategy; 
 
   public:
   HttpTcpServer();
@@ -28,7 +29,7 @@ class HttpTcpServer : public Server {
   Router& getRouter();
   int getPort();
   int getSocket();
-  void useStrategy(ServerStartStrategy*);
+  void useStrategy(std::unique_ptr<ServerStartStrategy>);
   void bindAndListen();
   void useMiddleWares(std::function<void(HttpRequest&)> middleware);
   void kickStart(int port, std::function<void()> function);

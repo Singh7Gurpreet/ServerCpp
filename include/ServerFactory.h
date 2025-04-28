@@ -8,7 +8,7 @@
 #include "SingleThreadServerStrategy.h"
 #include "ServerNotFoundException.h"
 #include "MultiThreadServerStrategy.h"
-#include "KqueueThreadedAcceptStrategy.h"
+#include "EventHandlerFactory.h"
 
 /*
 Why factory design pattern for server?

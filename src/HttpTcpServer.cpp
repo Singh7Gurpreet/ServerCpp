@@ -8,8 +8,6 @@ HttpTcpServer::HttpTcpServer() : routes(Router::getRouter()) {
 
 HttpTcpServer::~HttpTcpServer() {
   close(socketId);
-  delete this->strategy;
-  this->strategy = nullptr;
 }
 
 Router& HttpTcpServer::getRouter() {
@@ -34,8 +32,8 @@ void HttpTcpServer::bindAndListen() {
   }
 }
 
-void HttpTcpServer::useStrategy(ServerStartStrategy* ptr) {
-  this->strategy = ptr;
+void HttpTcpServer::useStrategy(std::unique_ptr<ServerStartStrategy> ptr) {
+  this->strategy = std::move(ptr);
 }
 
 void HttpTcpServer::kickStart(int port, std::function<void()> function) {
