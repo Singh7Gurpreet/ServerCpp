@@ -103,7 +103,7 @@ router.post("/submit", [&](HttpRequest& req) {
   1. **Router parses** the incoming HTTP request.
   2. **Finds the matching route** (method + path) in its internal `routesMap`.
   3. If found, the **corresponding handler is executed**.
-  4. If not found, the router **responds with a `BAD_REQUEST (400)` error**.
+  4. If not found, the router **responds with a `NOT FOUND(404)` error**.
 
 ### Behind the scenes:
 
@@ -121,7 +121,7 @@ If the route is not found:
   "message": "Url not found"
 }
 ```
-is returned with HTTP `400 BAD_REQUEST` status.
+is returned with HTTP `404 NOT_FOUND` status.
 
 ---
 
@@ -145,11 +145,5 @@ std::unique_ptr<Server> ServerFactory::create(ServerType type, int flag);
   It may not be fully production-ready yet.
 - Always **handle exceptions** during server startup to ensure clean error handling.
 - You can easily extend this framework to add `DELETE` or custom HTTP methods.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
 
 ---
