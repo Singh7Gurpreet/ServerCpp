@@ -1,11 +1,12 @@
 #include "KqueueHandler.h"
 
 KqueueHandler::KqueueHandler(int n) {
-  kq = kqueue();
+  this->kq = kqueue();
   pool = new ThreadPool<std::function<void()>>(n);
   if(kq == -1) {
     throw KqueueException("Failed to create kqueue");
   }
+  this->events.resize(MAX_EVENTS);
 }
 
 KqueueHandler::~KqueueHandler() {
@@ -25,7 +26,7 @@ void KqueueHandler::registerChanges(int socketId) {
 }
 
 void KqueueHandler::processEvents(HttpTcpServer& server) {
-  int nevents = kevent(kq, nullptr, 0, events.data(), MAX_EVENTS, nullptr);
+  int nevents = kevent(this->kq, nullptr, 0, this->events.data(), MAX_EVENTS, nullptr);
   if (nevents == -1) {
       throw KqueueException("Error in waiting for events");
   }
