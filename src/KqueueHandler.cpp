@@ -34,32 +34,60 @@ void KqueueHandler::processEvents(HttpTcpServer& server) {
   }
 
   for (int i = 0; i < nevents; ++i) {
-      if (events[i].filter == EVFILT_READ) {
-          if (events[i].ident == (uintptr_t)socketId) { 
-              sockaddr_in clientAddr{};
-              socklen_t clientSize = sizeof(clientAddr);
-              int clientSocket = accept(socketId, (sockaddr*)&clientAddr, &clientSize);
-              
-              if (clientSocket >= 0) {
-                  fcntl(clientSocket, F_SETFL, O_NONBLOCK);
-                  char buffer[1024] = {0};
+    if (events[i].filter == EVFILT_READ) {
+        if (events[i].ident == (uintptr_t)socketId) {
+            // New connection waiting on server socket
+            sockaddr_in clientAddr{};
+            socklen_t clientSize = sizeof(clientAddr);
+            int clientSocket = accept(socketId, (sockaddr*)&clientAddr, &clientSize);
 
-                  // Instead of reading here, push the clientSocket to thread pool
-                  pool->addWork([clientSocket, buffer, &server]() mutable {
-                      try {
-                          ssize_t bytes = read(clientSocket, buffer, sizeof(buffer));
-                          if (bytes > 0) {
-                              server.getRouter().handleRequest(buffer, clientSocket);
-                          }
-                          close(clientSocket); // close after handling
-                      } catch (Exceptions& e) {
-                          e.logError();
-                      }
-                  });
-              }
-          }
-      }
-  }
+            if (clientSocket >= 0) {
+                // Make client socket non-blocking
+                fcntl(clientSocket, F_SETFL, O_NONBLOCK);
+
+                // Register clientSocket to kqueue for EVFILT_READ
+                struct kevent newEvent;
+                EV_SET(&newEvent, clientSocket, EVFILT_READ, EV_ADD, 0, 0, NULL);
+                kevent(kq, &newEvent, 1, NULL, 0, NULL);
+
+                std::cout << "Accepted and registered new client socket: " << clientSocket << std::endl;
+            }
+        } 
+        else {
+            // Data available to read on clientSocket
+            int clientSocket = (int)events[i].ident;
+
+            pool->addWork([clientSocket, &server]() mutable {
+                char buffer[1024];
+                while (true) {
+                    ssize_t bytes = read(clientSocket, buffer, sizeof(buffer));
+                    if (bytes > 0) {
+                        try{
+                        server.getRouter().handleRequest(buffer, clientSocket);
+                        } catch (Exceptions& e) {
+                            e.logError();
+                        }
+                    } else if (bytes == 0) {
+                        // client closed connection
+                        // close(clientSocket);
+                        break;
+                    } else {
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            // no more data for now
+                            break;
+                        } else {
+                            // real error
+                            perror("read");
+                            // close(clientSocket);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
+
 }
 
 #endif
