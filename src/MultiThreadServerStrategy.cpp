@@ -27,10 +27,11 @@ void MultiThreadServerStrategy::kickStart(HttpTcpServer& server, std::function<v
 
       if (clientSocket >= 0) {
           char buffer[8192] = {0};
-          read(clientSocket, buffer, sizeof(buffer));
+          int bytes = read(clientSocket, buffer, sizeof(buffer));
           pool->addWork([buffer, clientSocket, &server]() {
             try {
                 server.getRouter().handleRequest((char*)buffer, clientSocket);
+                close(clientSocket);
             } catch (Exceptions& e) {
                 e.logError();
             }

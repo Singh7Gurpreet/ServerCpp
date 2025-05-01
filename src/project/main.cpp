@@ -37,7 +37,7 @@ int main() {
     });
 
     try{
-    auto server = ServerFactory::create(ServerType::HTTP,ServerFlags::MULTITHREADED|ServerFlags::EVENTS_BASED);
+    auto server = ServerFactory::create(ServerType::HTTP,ServerFlags::MULTITHREADED);
     server->kickStart(3000,[&](){
         std::cout << "Listening on port 3000...\n";
     });

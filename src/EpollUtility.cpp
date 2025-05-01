@@ -37,7 +37,7 @@ void EpollUtility::removeFileDescriptor(const int &fileDescriptor) {
 }
 
 int EpollUtility::getReadyEvents() {
-  int returnValue = epoll_wait(EpollFileDescriptor,events.data(),MAX_EVENTS,0);
+  int returnValue = epoll_wait(EpollFileDescriptor,events.data(),events.size(),0);
   assert(returnValue != -1);
   return returnValue;
 }

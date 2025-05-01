@@ -34,10 +34,9 @@ void EpollThreadedAcceptStrategy::kickStart(HttpTcpServer& server, std::function
     if(n <= 0) continue;
 
     auto events = epoll.getEvents();
-
+    std::cout << n << "\n";
     for(int i = 0; i < n; i++) {
       epoll_event tempEvent = events[i];
-
       if(tempEvent.data.fd == server.getSocket()) {
         sockaddr clientAddr{};
         socklen_t clientLen = sizeof(clientAddr);
@@ -54,15 +53,13 @@ void EpollThreadedAcceptStrategy::kickStart(HttpTcpServer& server, std::function
           close(clientSocket);
         } else {
           std::string request(buffer, readBytes);
-          try{
           pool->addWork([request,&server,clientSocket]{
+            try{
             server.getRouter().handleRequest((char*)request.c_str(),clientSocket);
-            close(clientSocket);
+            } catch(Exceptions& e) {
+              e.logError();
+            }
           });
-        } catch (Exceptions& e) {
-          e.logError();
-          throw;
-        }
         }
       }
     }
