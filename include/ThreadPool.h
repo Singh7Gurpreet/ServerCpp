@@ -9,95 +9,86 @@
 #include <future>
 #include <stdexcept>
 
+template <typename DataType>
 class ThreadPool {
-public:
-    explicit ThreadPool(size_t threads);
-    ~ThreadPool();
-
-    template <typename F, typename... Args>
-    auto addWork(F&& f, Args&&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>;
-
-private:
-    // Worker loop
-    void workAssigner();
-
     std::vector<std::thread> workers;
-    std::queue<std::function<void()>> workQueue;
-
-    std::mutex lockGuard;
+    std::vector<std::queue<DataType>> workQueues;
+    std::vector<std::mutex> queueLocks;
     std::condition_variable cv;
+    std::mutex cvLock;
     bool stop = false;
-};
+    int count = 0;  // round-robin index
 
-// Constructor
-inline ThreadPool::ThreadPool(size_t threads) {
-    if (threads == 0)
-        throw std::runtime_error("Thread count must be > 0");
+    void workAssigner(int index) {
+        while (true) {
+            DataType work;
 
-    for (size_t i = 0; i < threads; ++i) {
-        workers.emplace_back(&ThreadPool::workAssigner, this);
-    }
-}
+            {
+                std::unique_lock<std::mutex> lock(queueLocks[index]);
 
-// Destructor
-inline ThreadPool::~ThreadPool() {
-    {
-        std::unique_lock<std::mutex> lock(lockGuard);
-        stop = true;
-    }
-    cv.notify_all();
+                if (workQueues[index].empty()) {
+                    lock.unlock();
 
-    for (auto& worker : workers) {
-        if (worker.joinable()) {
-            worker.join();
+                    // Wait on global cv (so all threads sleep when idle)
+                    std::unique_lock<std::mutex> cvUnlock(cvLock);
+                    cv.wait(cvUnlock, [this]() {
+                        return stop; // woken up either to check stop or retry
+                    });
+                    continue;
+                }
+
+                // Pop task from this thread's queue
+                work = std::move(workQueues[index].front());
+                workQueues[index].pop();
+            }
+
+            // Execute work outside lock
+            work();
         }
     }
-}
 
-// Worker thread loop
-inline void ThreadPool::workAssigner() {
-    while (true) {
-        std::function<void()> task;
+public:
+    ThreadPool(int n) {
+        if (n <= 0)
+            throw std::runtime_error("Thread count must be positive");
+
+        stop = false;
+        workQueues.resize(n);
+        queueLocks.resize(n);
+
+        for (int i = 0; i < n; ++i) {
+            workers.emplace_back(&ThreadPool::workAssigner, this, i);
+        }
+    }
+
+    ~ThreadPool() {
+        {
+            std::unique_lock<std::mutex> lock(cvLock);
+            stop = true;
+        }
+        cv.notify_all();
+
+        for (auto &worker : workers) {
+            if (worker.joinable()) {
+                worker.join();
+            }
+        }
+    }
+
+    void addWork(DataType d) {
+        int index;
 
         {
-            std::unique_lock<std::mutex> lock(lockGuard);
-            cv.wait(lock, [this]() {
-                return stop || !workQueue.empty();
-            });
-
-            if (stop && workQueue.empty()) return;
-
-            task = std::move(workQueue.front());
-            workQueue.pop();
+            std::lock_guard<std::mutex> lock(cvLock);
+            index = count;
+            count = (count + 1) % workQueues.size();
         }
 
-        task(); // Execute task
-    }
-}
-
-// Template: Add work
-template <typename F, typename... Args>
-auto ThreadPool::addWork(F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type>
-{
-    using return_type = typename std::result_of<F(Args...)>::type;
-
-    auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<F>(f), std::forward<Args>(args)...)
-    );
-
-    std::future<return_type> res = task->get_future();
-
-    {
-        std::lock_guard<std::mutex> lock(lockGuard);
-        if (stop) {
-            throw std::runtime_error("addWork on stopped ThreadPool");
+        {
+            std::lock_guard<std::mutex> lock(queueLocks[index]);
+            workQueues[index].push(std::move(d));
         }
 
-        workQueue.emplace([task]() { (*task)(); });
+        cv.notify_all();  // Notify all threads to check their queues
     }
-
-    cv.notify_one();
-    return res;
-}
+};

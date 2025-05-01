@@ -52,6 +52,9 @@
     "typeinfo": "cpp",
     "variant": "cpp",
     "algorithm": "cpp",
-    "*.tpp": "cpp"
+    "*.tpp": "cpp",
+    "sstream": "cpp",
+    "memory": "cpp",
+    "iomanip": "cpp"
   }
 }

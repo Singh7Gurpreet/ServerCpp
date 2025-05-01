@@ -10,23 +10,6 @@
 
 using namespace std;
 
-/*
-POST /users/signUp HTTP/1.1
-Content-Type: application/json
-User-Agent: PostmanRuntime/7.42.0
-Accept: *//*
-Postman-Token: c4e95e2a-fcbe-42dc-ae21-36a6621ca24f
-Host: localhost:3000
-Accept-Encoding: gzip, deflate, br
-Connection: keep-alive
-Content-Length: 43
-
-{
-    "Data" : 313213,
-    "Name" : 20000
-}
-*/
-
 int main() {
     Router& router = Router::getRouter();
 
