@@ -53,11 +53,9 @@ void Router::handleRequest(char buffer[], int clientSocket) {
         if(bytes == 1) {
             delete response;
             response = nullptr;
-            close(clientSocket);
             throw std::runtime_error("Unable to send data\n");
         }
         delete response;
         response = nullptr;
-        close(clientSocket);
     }
 }

@@ -10,6 +10,10 @@ HttpTcpServer::~HttpTcpServer() {
   close(socketId);
 }
 
+sockaddr_in* HttpTcpServer::getAddress() {
+  return &pr;
+}
+
 Router& HttpTcpServer::getRouter() {
   return this->routes;
 }

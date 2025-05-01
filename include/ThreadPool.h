@@ -6,6 +6,8 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <future>
+#include <stdexcept>
 
 template <typename DataType>
 class ThreadPool {

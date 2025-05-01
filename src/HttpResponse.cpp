@@ -49,7 +49,7 @@ char* HttpResponse::generateResponse() {
   output << getHttpVersionString(this->getVersion()) << " " << this->getStatus() << "\r\n";
   output << "Content-Length: " << this->bodyLength << "\r\n";
   output << "Content-Type: " << this->getContentType() << "\r\n";
-  output << "Connection: " << "close\r\n";
+  output << "Connection: " << "keep-alive\r\n";
   output << "\r\n";
   output << this->getBody();
 
