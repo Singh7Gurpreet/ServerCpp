@@ -1,7 +1,7 @@
 #include "MultiThreadServerStrategy.h"
 
-MultiThreadServerStrategy::MultiThreadServerStrategy(int numberOfThreads){
-  pool = new ThreadPool<std::function<void()>>(numberOfThreads);
+MultiThreadServerStrategy::MultiThreadServerStrategy(){
+  pool = new ThreadPool(std::thread::hardware_concurrency());
 }
 
 MultiThreadServerStrategy::~MultiThreadServerStrategy() {

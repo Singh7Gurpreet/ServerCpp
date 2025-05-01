@@ -43,7 +43,5 @@ int main() {
     });
 } catch (Exceptions& e) {
     e.logError();
-} catch (...) {
-    std::cout << "Error occured";
 }
 }

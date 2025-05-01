@@ -3,9 +3,9 @@
 #include "ThreadPool.h"
 
 class MultiThreadServerStrategy : public ServerStartStrategy {
-  ThreadPool<std::function<void()>> *pool;
+  ThreadPool *pool;
   public:
-      MultiThreadServerStrategy(int numberOfThreads);
+      MultiThreadServerStrategy();
       ~MultiThreadServerStrategy();
   
       void kickStart(HttpTcpServer& server, std::function<void()> function) override;

@@ -4,7 +4,7 @@
 
 EpollHandler::EpollHandler(int n) {
   this->epollFd = epoll_create1(0);
-  pool = new ThreadPool<std::function<void()>>(n);
+  pool = new ThreadPool(n);
   if (epollFd == -1) {
     throw EpollException("Failed to create epoll instance");
   }

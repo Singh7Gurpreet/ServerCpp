@@ -5,13 +5,14 @@
 #include "ServerStartStrategy.h"
 #include "HttpTcpServer.h"
 #include "ThreadPool.h"
-#include "EpollHandler.h"
+#include "EpollUtility.h"
 
 class EpollThreadedAcceptStrategy : public ServerStartStrategy {
-  EpollHandler epollHandler;
+  EpollUtility &epoll;
+  ThreadPool *pool;
   public:
-      EpollThreadedAcceptStrategy(int numberOfThreads = 1);
-      ~EpollThreadedAcceptStrategy() = default;
+      EpollThreadedAcceptStrategy();
+      ~EpollThreadedAcceptStrategy();
   
       void kickStart(HttpTcpServer& server, std::function<void()> function) override;
 };

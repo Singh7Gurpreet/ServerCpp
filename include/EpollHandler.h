@@ -21,7 +21,7 @@ class EpollHandler : public EventHandler {
   int epollFd;
   int socketId;
   std::vector<struct epoll_event> events;
-  ThreadPool<std::function<void()>>* pool;
+  ThreadPool* pool;
 
   public:
   EpollHandler(int n = 1);

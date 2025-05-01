@@ -6,72 +6,98 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <future>
+#include <stdexcept>
 
-template <typename DataType>
-class ThreadPool{
-  std::vector<std::thread> workers;
-  std::queue<DataType> workQueue;
-  std::mutex lockGuard;
-  std::condition_variable cv;
-  bool stop;
-  void workAssigner() {
-    while (true) {
-        std::unique_lock<std::mutex> lock(this->lockGuard);
+class ThreadPool {
+public:
+    explicit ThreadPool(size_t threads);
+    ~ThreadPool();
 
-        cv.wait(lock, [this]() {
-            return stop || !this->workQueue.empty();
-        });
+    template <typename F, typename... Args>
+    auto addWork(F&& f, Args&&... args)
+        -> std::future<typename std::result_of<F(Args...)>::type>;
 
-        if (stop && this->workQueue.empty()) {
-            return;
-        }
+private:
+    // Worker loop
+    void workAssigner();
 
-        auto work = std::move(this->workQueue.front());
-        this->workQueue.pop();
+    std::vector<std::thread> workers;
+    std::queue<std::function<void()>> workQueue;
 
-        lock.unlock();
-
-        work(); // Execute the task
-    }
+    std::mutex lockGuard;
+    std::condition_variable cv;
+    bool stop = false;
 };
 
-  public:
+// Constructor
+inline ThreadPool::ThreadPool(size_t threads) {
+    if (threads == 0)
+        throw std::runtime_error("Thread count must be > 0");
 
-  ThreadPool(int n) {
-    if (n < 0) {
-        throw std::runtime_error("Number of threads cannot be negative");
-    }
-    unsigned int un = static_cast<unsigned int>(n);
-
-    unsigned int max_threads = std::thread::hardware_concurrency();
-    if (max_threads != 0 && un > max_threads) {
-        throw std::runtime_error("Requested threads exceed system capabilities");
-    }
-    
-    stop = false;
-    for (unsigned int i = 0; i < un; i++) {
-        workers.push_back(std::thread(&ThreadPool::workAssigner, this));
+    for (size_t i = 0; i < threads; ++i) {
+        workers.emplace_back(&ThreadPool::workAssigner, this);
     }
 }
 
-  ~ThreadPool() {
+// Destructor
+inline ThreadPool::~ThreadPool() {
     {
         std::unique_lock<std::mutex> lock(lockGuard);
         stop = true;
     }
     cv.notify_all();
 
-    for (std::thread &worker : workers) {
-        if (worker.joinable())
-            worker.join(); 
+    for (auto& worker : workers) {
+        if (worker.joinable()) {
+            worker.join();
+        }
     }
 }
 
-  void addWork(DataType d) {
-    {
-        std::lock_guard<std::mutex> lock(this->lockGuard);
-        workQueue.push(std::move(d));
+// Worker thread loop
+inline void ThreadPool::workAssigner() {
+    while (true) {
+        std::function<void()> task;
+
+        {
+            std::unique_lock<std::mutex> lock(lockGuard);
+            cv.wait(lock, [this]() {
+                return stop || !workQueue.empty();
+            });
+
+            if (stop && workQueue.empty()) return;
+
+            task = std::move(workQueue.front());
+            workQueue.pop();
+        }
+
+        task(); // Execute task
     }
-    cv.notify_one();
 }
-};
+
+// Template: Add work
+template <typename F, typename... Args>
+auto ThreadPool::addWork(F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type>
+{
+    using return_type = typename std::result_of<F(Args...)>::type;
+
+    auto task = std::make_shared<std::packaged_task<return_type()>>(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+    );
+
+    std::future<return_type> res = task->get_future();
+
+    {
+        std::lock_guard<std::mutex> lock(lockGuard);
+        if (stop) {
+            throw std::runtime_error("addWork on stopped ThreadPool");
+        }
+
+        workQueue.emplace([task]() { (*task)(); });
+    }
+
+    cv.notify_one();
+    return res;
+}

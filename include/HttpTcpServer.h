@@ -29,6 +29,7 @@ class HttpTcpServer : public Server {
   Router& getRouter();
   int getPort();
   int getSocket();
+  sockaddr_in* getAddress();
   void useStrategy(std::unique_ptr<ServerStartStrategy>);
   void bindAndListen();
   void useMiddleWares(std::function<void(HttpRequest&)> middleware);

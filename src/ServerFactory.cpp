@@ -8,7 +8,7 @@ std::unique_ptr<Server> ServerFactory::create(ServerType type, int flag) {
       server->useStrategy(EventHandlerFactory::create());
   }
   else if (flag & MULTITHREADED) {
-      server->useStrategy(std::make_unique<MultiThreadServerStrategy>(4));
+      server->useStrategy(std::make_unique<MultiThreadServerStrategy>());
   }
   else {
       server->useStrategy(std::make_unique<SingleThreadServerStrategy>());
