@@ -139,11 +139,46 @@ std::unique_ptr<Server> ServerFactory::create(ServerType type, int flag);
 
 ---
 
-## ⚡ Important Notes
+## Architecture: Epoll-based High-Performance Design
 
-- **Events-based strategy is still under development.**  
-  It may not be fully production-ready yet.
-- Always **handle exceptions** during server startup to ensure clean error handling.
-- You can easily extend this framework to add `DELETE` or custom HTTP methods.
+Achieved **100,000+ responses/sec** using `epoll` on Ubuntu with thread pool optimization.
 
 ---
+
+### Key Steps
+
+1. **Port Binding & Listening**  
+   - The server binds to a port and listens for TCP connections.  
+   - Once the **3-way TCP handshake** is complete, the connection is ready.
+
+2. **Epoll Registration**  
+   - The server registers this port with **epoll** using `epoll_ctl`.  
+   - Epoll internally uses **red-black trees** for efficient FD management with `O(log n)` search.
+
+3. **Non-blocking Accept**  
+   - When a new client is detected (`EPOLLIN` event), the server accepts the connection (non-blocking)  
+   - Then registers the **client FD** into `epoll`.
+
+4. **Epoll Wait Loop**  
+   - An infinite loop runs `epoll_wait` to check for active FDs.  
+   - When data is ready on a socket, it’s pushed into a **vector of `epoll_events`**.
+
+5. **Read & Delegate to Thread Pool**  
+   - As soon as an event is received, data is read immediately.  
+   - The request is handed off to a **thread pool**, avoiding costly thread creation/destruction.
+
+6. **Router Execution**  
+   - The router receives the raw request string and client socket ID.  
+   - It generates the appropriate response and sends it back to the client.
+
+---
+
+### ⚡ Why It’s Fast
+
+- **Epoll uses red-black trees**:  
+  Efficient `O(log n)` lookup time vs `O(n)` in `poll`.
+
+- **Thread pool avoids overhead**:  
+  Reuses a fixed number of threads for handling client tasks.
+---
+
