@@ -53,7 +53,7 @@ You can customize the server behavior using these flags:
 | Flag                | Description                                |
 |---------------------|--------------------------------------------|
 | `ServerFlags::MULTITHREADED` | Runs server using multiple threads. |
-| `ServerFlags::EVENTS_BASED`  | Adds event-driven I/O handling (under development 🚧). |
+| `ServerFlags::EVENTS_BASED`  | Adds event-driven I/O handling. |
 | (No flag)           | Runs server in single-threaded mode.       |
 
 👉 **You can combine flags** using the bitwise OR operator (`|`).
