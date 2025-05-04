@@ -10,7 +10,7 @@ It provides an **easy way to start different server types** (single-threaded, mu
 - Create different types of servers using `ServerFactory`:
   - **Single-threaded Server**
   - **Multi-threaded Server**
-  - **Multi-threaded + Event-based Server** (🚧 under development for full stability)
+  - **Multi-threaded + Event-based Server**
 - Easy-to-use **Router** to define request handlers.
 - Abstraction layers for adding new server strategies in the future.
 
