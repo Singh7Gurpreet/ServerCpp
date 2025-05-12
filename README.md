@@ -181,4 +181,12 @@ Achieved **100,000+ responses/sec** using `epoll` on Ubuntu with thread pool opt
 - **Thread pool avoids overhead**:  
   Reuses a fixed number of threads for handling client tasks.
 ---
+## 🧪 Performance Testing
+
+The server was benchmarked using [`wrk`](https://github.com/wg/wrk), a modern HTTP benchmarking tool for load testing and performance profiling.
+
+### 🔧 Test Configuration
+
+```bash
+wrk -t 8 -c 100 -d 30s http://localhost:3000
 
