@@ -1,4 +1,4 @@
-#ifndef ___APPLE__
+#ifndef __APPLE__
 
 #include "EpollUtility.h"
 
@@ -33,7 +33,6 @@ void EpollUtility::modifyFileDescriptor(const int &fileDescriptor, struct epoll_
 
 void EpollUtility::removeFileDescriptor(const int &fileDescriptor) {
   int returnValue = epoll_ctl(EpollFileDescriptor,EPOLL_CTL_DEL,fileDescriptor,nullptr);
-  // assert(returnValue == 0);
 }
 
 int EpollUtility::getReadyEvents() {

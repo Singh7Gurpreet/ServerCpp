@@ -23,7 +23,6 @@ void EpollThreadedAcceptStrategy::kickStart(HttpTcpServer& server, std::function
     throw;
   }
   
-  //calling callback provided by user
   function();
 
   epoll.addForRead(server.getSocket());
@@ -34,7 +33,6 @@ void EpollThreadedAcceptStrategy::kickStart(HttpTcpServer& server, std::function
     if(n <= 0) continue;
 
     auto events = epoll.getEvents();
-    std::cout << n << "\n";
     for(int i = 0; i < n; i++) {
       epoll_event tempEvent = events[i];
       if(tempEvent.data.fd == server.getSocket()) {

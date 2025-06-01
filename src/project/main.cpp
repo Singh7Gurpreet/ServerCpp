@@ -3,6 +3,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstring>
+#include <fstream>
+#include <streambuf>
 
 #include "ServerFactory.h"
 #include "Exceptions.h"
@@ -10,14 +12,34 @@
 
 using namespace std;
 
+std::string cachedHtml;
+std::once_flag cacheInitialized;
+
+std::string readFileOnce(const std::string& filepath) {
+    std::call_once(cacheInitialized, [&]() {
+        std::ifstream file(filepath);
+        if (file) {
+            cachedHtml.assign((std::istreambuf_iterator<char>(file)),
+                               std::istreambuf_iterator<char>());
+        } else {
+            cachedHtml = "<h1>Error loading file</h1>";
+        }
+    });
+    return cachedHtml;
+}
+
 int main() {
     Router& router = Router::getRouter();
 
-    router.get("/",[&](HttpRequest& req) {
-        req.response.setBody("<h1>Hello World from layers of abstraction</h1>")
-                    .setContentType(HttpContentType::APPLICATION_JSON)
-                    .setStatus(HttpStatusCode::OK);
-    });
+// Inside your router setup
+router.get("/", [&](HttpRequest& req) {
+    std::string htmlContent = readFileOnce("./src/project/index.html");
+
+    req.response.setBody(std::move(htmlContent))
+                .setContentType(HttpContentType::TEXT_HTML)
+                .setStatus(HttpStatusCode::OK);
+});
+
 
     try{
     auto server = ServerFactory::create(ServerType::HTTP,ServerFlags::MULTITHREADED);
@@ -28,3 +50,4 @@ int main() {
     e.logError();
 }
 }
+
