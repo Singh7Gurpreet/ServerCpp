@@ -42,8 +42,8 @@ router.get("/", [&](HttpRequest& req) {
 
 
     try{
-    auto server = ServerFactory::create(ServerType::HTTP,ServerFlags::MULTITHREADED);
-    server->kickStart(3000,[&](){
+    auto server = ServerFactory::create(ServerType::HTTP,ServerFlags::MULTITHREADED|ServerFlags::EVENTS_BASED);
+    server->kickStart(3001,[&](){
         std::cout << "Listening on port 3000...\n";
     });
 } catch (Exceptions& e) {
